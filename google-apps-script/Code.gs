@@ -1,3 +1,8 @@
+// The spreadsheet to write into — the long id from its URL:
+// https://docs.google.com/spreadsheets/d/<SHEET_ID>/edit
+// Set explicitly (rather than getActiveSpreadsheet) so this works as a
+// standalone script, not only as one bound to a Sheet.
+const SHEET_ID = 'PASTE_SHEET_ID_HERE';
 const SHEET_NAME = 'Contact Submissions';
 const NOTIFY_EMAILS = ['PASTE_NOTIFY_EMAIL_HERE'];
 
@@ -53,7 +58,7 @@ function doPost(e) {
 }
 
 function getOrCreateSheet() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = SpreadsheetApp.openById(SHEET_ID);
   let sheet = ss.getSheetByName(SHEET_NAME);
   if (!sheet) {
     sheet = ss.insertSheet(SHEET_NAME);

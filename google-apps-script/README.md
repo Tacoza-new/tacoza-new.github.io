@@ -14,9 +14,18 @@ constant rather than an environment variable.
 1. Create a Google Sheet **under an account Tacoza owns**, not a
    personal one — otherwise the submissions are locked to whoever set
    it up the day they leave.
-2. In that Sheet: **Extensions → Apps Script**.
-3. Replace the placeholder code with the contents of `Code.gs`, and set
-   `NOTIFY_EMAILS` to the address(es) that should be alerted.
+2. Copy its id out of the URL — the long string between `/d/` and
+   `/edit` in
+   `https://docs.google.com/spreadsheets/d/<SHEET_ID>/edit`.
+3. Paste the contents of `Code.gs` into the script project, then set
+   `SHEET_ID` to that id and `NOTIFY_EMAILS` to the address(es) that
+   should be alerted.
+
+   The script opens the Sheet with `openById` rather than
+   `getActiveSpreadsheet()`, so it works as a **standalone** script
+   (one created at script.google.com). `getActiveSpreadsheet()` returns
+   `null` there, which surfaces as
+   `TypeError: Cannot read properties of null (reading 'getSheetByName')`.
 4. **Deploy → New deployment → Web app**, with:
    - Execute as: **Me**
    - Who has access: **Anyone**
