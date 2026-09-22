@@ -9,35 +9,85 @@ The form posts JSON to the script's `/exec` URL, which lives in
 secret** — the endpoint is public by design, which is why it's a plain
 constant rather than an environment variable.
 
+## Configuration lives in Script Properties
+
+`SHEET_ID` and `NOTIFY_EMAILS` are read at runtime from Script
+Properties, not from the code. Changing who gets notified therefore
+needs **no code edit, no new version and no redeploy** — the `/exec`
+URL never changes.
+
+Set them under **Project Settings (gear icon) -> Script Properties**:
+
+| Property | Value |
+|---|---|
+| `SHEET_ID` | the long string between `/d/` and `/edit` in the Sheet's URL |
+| `NOTIFY_EMAILS` | comma-separated, e.g. `a@tacoza.com, b@tacoza.com` |
+
 ## First-time setup
 
 1. Create a Google Sheet **under an account Tacoza owns**, not a
    personal one — otherwise the submissions are locked to whoever set
    it up the day they leave.
-2. Copy its id out of the URL — the long string between `/d/` and
-   `/edit` in
-   `https://docs.google.com/spreadsheets/d/<SHEET_ID>/edit`.
-3. Paste the contents of `Code.gs` into the script project, then set
-   `SHEET_ID` to that id and `NOTIFY_EMAILS` to the address(es) that
-   should be alerted.
-
-   The script opens the Sheet with `openById` rather than
-   `getActiveSpreadsheet()`, so it works as a **standalone** script
-   (one created at script.google.com). `getActiveSpreadsheet()` returns
-   `null` there, which surfaces as
-   `TypeError: Cannot read properties of null (reading 'getSheetByName')`.
-4. **Deploy → New deployment → Web app**, with:
+2. Paste `Code.gs` into the script project.
+3. Set `SHEET_ID` and `NOTIFY_EMAILS` as Script Properties (above).
+4. Run `doGet` once from the editor and accept the authorisation
+   prompts. **This matters:** the script needs both the Sheets *and*
+   the Gmail scope. Running only a sheet function grants only the sheet
+   scope, and mail then fails silently at submit time.
+5. **Deploy -> New deployment -> Web app**, with:
    - Execute as: **Me**
    - Who has access: **Anyone**
 
-   Both settings matter. "Anyone" is the one people get wrong — any
-   other value makes the browser's POST fail with a 401, because the
-   visitor submitting the form is not signed in to Google.
-5. Copy the `/exec` URL it gives you into `ENDPOINT` in
-   `components/contact-form.tsx`.
+   "Anyone" is the one people get wrong — any other value makes the
+   browser's POST fail with a 401, because the visitor submitting the
+   form is not signed in to Google.
+6. Copy the `/exec` URL into `ENDPOINT` in `components/contact-form.tsx`.
 
-The first time the script runs it will ask you to authorise the Sheets
-and Gmail scopes. That's expected.
+## Diagnosing a missing email
+
+**Open the `/exec` URL in a browser.** `doGet` reports what the script
+can actually see:
+
+```json
+{
+  "deployedVersionHasDiagnostics": true,
+  "sheetIdConfigured": "yes",
+  "notifyEmails": ["someone@tacoza.com"],
+  "remainingDailyEmailQuota": 100,
+  "sheetReachable": "Website enquiries",
+  "effectiveUser": "someone@tacoza.com"
+}
+```
+
+Read it like this:
+
+- **The page 404s or has no `deployedVersionHasDiagnostics` field** —
+  the deployment is serving an **older version** of the code. This is
+  the most common cause. See *Making a later change live* below.
+- **`notifyEmails: "NONE — ..."`** — the property is unset, so nothing
+  is ever mailed. A submission still returns `ok` and still writes the
+  row.
+- **`remainingDailyEmailQuota: 0`** — the daily cap is spent; it resets
+  every 24 hours.
+- **`ERROR: ... permission ...`** on quota or sheet — the Gmail or
+  Sheets scope was never authorised. Run `doGet` from the editor and
+  accept the prompts.
+
+A real submission now returns detail too, rather than a bare `ok`:
+
+```bash
+curl -s -L \
+  -H "Content-Type: text/plain;charset=utf-8" \
+  -d '{"fullName":"Test","email":"test@example.com","phone":"+91 9999999999"}' \
+  "https://script.google.com/macros/s/<deploymentId>/exec"
+```
+
+```json
+{"status":"ok","wroteRow":true,"emailsSent":1,"emailErrors":[]}
+```
+
+`wroteRow: true` with `emailsSent: 0` isolates the problem to mail, and
+`emailErrors` carries the reason.
 
 ## Verifying it works
 
