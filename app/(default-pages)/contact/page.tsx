@@ -52,7 +52,7 @@ export default function Pricing() {
         </p>{" "}
         <hr className="my-4" /> <h1 className="text-2xl font-bold text-slate-800 mb-4">Phone</h1>{" "}
         <p className="text-slate-500 font-[350]">
-          +91-8878249595
+          +91-9220642750
         </p>{" "}
         <hr className="my-4" /> <h1 className="text-2xl font-bold text-slate-800 mb-4">Chat Support</h1>{" "}
         <p className="text-slate-500 font-[350]">
