@@ -170,7 +170,7 @@ export default function Footer() {
               <li>
                 <a
                   className="text-slate-400 hover:text-rose-500 transition duration-150 ease-in-out"
-                  href="mailto:support@tacoza"
+                  href="mailto:support@tacoza.com"
                 >
                   Send us an email
                 </a>

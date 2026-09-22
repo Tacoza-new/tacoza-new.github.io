@@ -49,7 +49,7 @@ export default function Pricing() {
       <div className="max-w-6xl mx-auto mb-12 md:mt-12 p-4 sm:px-6">
         <h1 className="text-2xl font-bold text-slate-800 mb-4">Email</h1>{" "}
         <p className="text-slate-500 font-[350]">
-          support@tacoza.co
+          support@tacoza.com
         </p>{" "}
         <hr className="my-4" /> <h1 className="text-2xl font-bold text-slate-800 mb-4">Phone</h1>{" "}
         <p className="text-slate-500 font-[350]">

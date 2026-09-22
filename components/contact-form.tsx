@@ -47,7 +47,7 @@ export default function ContactForm() {
       setSubmitted(true);
     } catch (err) {
       setErrorMsg(
-        "Something went wrong — please try again, or email us at support@tacoza.co.",
+        "Something went wrong — please try again, or email us at support@tacoza.com.",
       );
     } finally {
       setSubmitting(false);
