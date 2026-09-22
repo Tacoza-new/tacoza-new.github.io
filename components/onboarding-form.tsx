@@ -5,7 +5,7 @@ import { useState } from "react";
 // Apps Script web app URL. Not a secret — the endpoint is public by
 // design (see google-apps-script/README.md).
 const ENDPOINT =
-  "https://script.google.com/macros/s/AKfycbzZKlFustkMCXKDthLT_gEaizV3JoDMXPvNnWDxwpFiOdWovZqrJu5ObrvRnVW2Bpu3/exec";
+  "https://script.google.com/macros/s/AKfycbydh76q1OSF-txeGRK3d9IOJihCB2WCAh7ueKP71nHC3zxgMS_QrDTQR10REfBuihjG/exec";
 
 const ROLES = ["Owner", "Chef", "Team manager", "Team member", "Other"];
 const OUTLET_TYPES = ["Restaurant", "Cafe", "Bar", "Food Truck", "Food Chains"];
