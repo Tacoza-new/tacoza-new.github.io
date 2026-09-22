@@ -4,7 +4,8 @@ import { useState } from "react";
 
 // Apps Script web app URL. Not a secret — the endpoint is public by design
 // (see google-apps-script/README.md). Replace after deploying the script.
-const ENDPOINT = "PASTE_APPS_SCRIPT_EXEC_URL_HERE";
+const ENDPOINT =
+  "https://script.google.com/macros/s/AKfycbzZKlFustkMCXKDthLT_gEaizV3JoDMXPvNnWDxwpFiOdWovZqrJu5ObrvRnVW2Bpu3/exec";
 
 const OUTLET_OPTIONS = ["1", "2-5", "6-20", "20+"];
 
