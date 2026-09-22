@@ -24,14 +24,6 @@ export default function Header() {
             {/* Desktop sign in links */}
             <ul className="flex grow justify-end flex-wrap items-center">
               <li className="ml-3">
-                <a
-                  className="btn-sm inline-flex items-center text-white font-semibold"
-                  href="https://seller.tacoza.com/login?next=/"
-                >
-                  Login
-                </a>
-              </li>
-              <li className="ml-3">
                 <Link
                   className="btn-sm inline-flex items-center text-slate-100 bg-stone-800 hover:bg-stone-900 group shadow-sm"
                   href="/apply"
