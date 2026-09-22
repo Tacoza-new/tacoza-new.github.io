@@ -1,6 +1,5 @@
 import Link from "next/link";
 import Script from "next/script";
-import ContactForm from "@/components/contact-form";
 
 export const metadata = {
   title: "Pricing - Tacoza",
@@ -59,8 +58,6 @@ export default function Pricing() {
         <p className="text-slate-500 font-[350]">
           You can access our live chat support by clicking on the chat icon in the bottom right corner of the screen.
         </p>
-        <hr className="my-4" />
-        <ContactForm />
       </div>
       <Script src="//code.tidio.co/lcekra8hwvljv0noe7nw4xj0v1navebu.js" async />
     </>

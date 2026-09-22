@@ -1,11 +1,22 @@
-# Contact form backend (Google Apps Script)
+# Website form backend (Google Apps Script)
 
-`Code.gs` handles the contact form on `/contact`: it appends each
-submission to a Google Sheet and emails a notification to everyone in
-`NOTIFY_EMAILS` at the top of the file.
+`Code.gs` handles the site's forms: it appends each submission to a tab
+in a Google Sheet and emails a notification to everyone in
+`NOTIFY_EMAILS`.
 
-The form posts JSON to the script's `/exec` URL, which lives in
-`components/contact-form.tsx` as `ENDPOINT`. That URL is **not a
+| Form | Page | Component | Sheet tab |
+|---|---|---|---|
+| Outlet Onboarding | `/apply` | `components/onboarding-form.tsx` | `Outlet Onboarding` |
+| Contact | — | — | `Contact Submissions` |
+
+The onboarding form replaced a Tally.so embed. The contact form was
+removed from the site; its routing stays in `Code.gs` so old rows and
+any future re-add keep working.
+
+Each form posts JSON to the script's `/exec` URL, sending a `formType`
+field (`onboarding` or `contact`) that selects the tab, the email
+subject and the column order. A payload with no `formType` falls back
+to the contact shape, so an older deployment keeps working. That URL is **not a
 secret** — the endpoint is public by design, which is why it's a plain
 constant rather than an environment variable.
 

@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import OnboardingForm from '@/components/onboarding-form'
 import Image from 'next/image'
 import Illustration from '@/public/images/hero-illustration.svg'
 import LogoFacebook from '@/public/images/logo-facebook.svg'
@@ -124,7 +125,7 @@ export default function Apply() {
                   <div className="flex pt-12 lg:pt-0 lg:pl-12 xl:pl-20">
                     <div className="w-full max-w-[480px] mx-auto lg:w-[480px] lg:max-w-none lg:mx-0 xl:w-[512px] bg-white p-6 shadow-2xl">
                       {/* Form */}
-                      <iframe data-tally-src="https://tally.so/embed/31vVg4?alignLeft=1&transparentBackground=1&dynamicHeight=1" loading="lazy" width="100%" height="400" title="Onboarding survey"></iframe>
+                      <OnboardingForm />
                     </div>
                   </div>
                 </div>
@@ -132,7 +133,6 @@ export default function Apply() {
             </div>
           </div>
         </section>
-        <script async src="https://tally.so/widgets/embed.js"></script>
       </main>
     </>
   )

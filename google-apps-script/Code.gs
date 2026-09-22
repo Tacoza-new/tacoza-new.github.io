@@ -14,7 +14,28 @@
  * email did not arrive.
  */
 
-const SHEET_NAME = 'Contact Submissions';
+// One Sheet, one tab per form. Anything without a formType falls back to
+// the contact tab so an older deployment keeps working unchanged.
+const FORMS = {
+  contact: {
+    sheetName: 'Contact Submissions',
+    subject: 'New enquiry — Tacoza',
+    headers: ['Timestamp', 'Name', 'Email', 'Phone', 'Restaurant', 'City', 'Outlets', 'Message'],
+    fields: ['fullName', 'email', 'phone', 'restaurant', 'city', 'outlets', 'message'],
+    labels: ['Name', 'Email', 'Phone', 'Restaurant', 'City', 'Number of outlets', 'Message'],
+  },
+  onboarding: {
+    sheetName: 'Outlet Onboarding',
+    subject: 'New outlet application — Tacoza',
+    headers: ['Timestamp', 'Name', 'Phone', 'Email', 'Role', 'Outlet Name', 'Outlet Type', 'City', 'Pincode'],
+    fields: ['fullName', 'phone', 'email', 'role', 'outletName', 'outletType', 'city', 'pincode'],
+    labels: ['Name', 'Mobile number', 'Email', 'Role', 'Outlet name', 'Outlet type', 'City', 'Pincode'],
+  },
+};
+
+// Sheets turns +91... into a formula or a number unless it is forced to
+// text with a leading apostrophe.
+const TEXT_FIELDS = ['phone', 'pincode'];
 
 function getConfig_() {
   const props = PropertiesService.getScriptProperties();
@@ -44,6 +65,7 @@ function doGet() {
     status: 'diagnostic',
     deployedVersionHasDiagnostics: true,
     sheetIdConfigured: cfg.sheetId ? 'yes' : 'NO — set SHEET_ID in Script Properties',
+    forms: Object.keys(FORMS),
     notifyEmails: cfg.notifyEmails.length
       ? cfg.notifyEmails
       : 'NONE — set NOTIFY_EMAILS in Script Properties',
@@ -90,31 +112,21 @@ function doPost(e) {
       return json_({ status: 'error', message: 'SHEET_ID is not set in Script Properties.' });
     }
 
-    const sheet = getOrCreateSheet_(cfg.sheetId);
-    sheet.appendRow([
-      new Date(),
-      data.fullName || '',
-      data.email || '',
-      // Leading apostrophe stops Sheets mangling +91... into a formula/number.
-      data.phone ? "'" + data.phone : '',
-      data.restaurant || '',
-      data.city || '',
-      data.outlets || '',
-      data.message || '',
-    ]);
-    result.wroteRow = true;
+    const form = FORMS[data.formType] || FORMS.contact;
 
-    const bodyLines = [
-      'New contact enquiry from the Tacoza website:',
-      '',
-      'Name: ' + (data.fullName || '-'),
-      'Email: ' + (data.email || '-'),
-      'Phone: ' + (data.phone || '-'),
-      'Restaurant: ' + (data.restaurant || '-'),
-      'City: ' + (data.city || '-'),
-      'Number of outlets: ' + (data.outlets || '-'),
-      'Message: ' + (data.message || '-'),
-    ];
+    const sheet = getOrCreateSheet_(cfg.sheetId, form);
+    sheet.appendRow([new Date()].concat(form.fields.map(function (f) {
+      const v = data[f] || '';
+      return v && TEXT_FIELDS.indexOf(f) !== -1 ? "'" + v : v;
+    })));
+    result.wroteRow = true;
+    result.sheet = form.sheetName;
+
+    const bodyLines = ['New submission from the Tacoza website:', ''].concat(
+      form.fields.map(function (f, i) {
+        return form.labels[i] + ': ' + (data[f] || '-');
+      })
+    );
 
     if (!cfg.notifyEmails.length) {
       result.emailErrors.push('NOTIFY_EMAILS is not set in Script Properties.');
@@ -127,7 +139,7 @@ function doPost(e) {
       try {
         MailApp.sendEmail({
           to: email,
-          subject: 'New enquiry — Tacoza',
+          subject: form.subject,
           body: bodyLines.join('\n'),
           replyTo: data.email || undefined,
           name: 'Tacoza Website',
@@ -144,12 +156,12 @@ function doPost(e) {
   }
 }
 
-function getOrCreateSheet_(sheetId) {
+function getOrCreateSheet_(sheetId, form) {
   const ss = SpreadsheetApp.openById(sheetId);
-  let sheet = ss.getSheetByName(SHEET_NAME);
+  let sheet = ss.getSheetByName(form.sheetName);
   if (!sheet) {
-    sheet = ss.insertSheet(SHEET_NAME);
-    sheet.appendRow(['Timestamp', 'Name', 'Email', 'Phone', 'Restaurant', 'City', 'Outlets', 'Message']);
+    sheet = ss.insertSheet(form.sheetName);
+    sheet.appendRow(form.headers);
   }
   return sheet;
 }
