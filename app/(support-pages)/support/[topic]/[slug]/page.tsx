@@ -6,7 +6,10 @@ import Hamburger from './hamburger'
 import SupportFooter from './footer'
 
 export async function generateStaticParams() {
+  // Both [topic] and [slug] are dynamic segments, so both must be
+  // returned or output: 'export' refuses the route.
   return allPosts.map((post) => ({
+    topic: post.topic.slug,
     slug: post.slug,
   }))
 }
